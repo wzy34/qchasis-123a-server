@@ -1,12 +1,12 @@
 /**
- * This file is created by qiufuyu, TEAM 123A
+ * This file is created by qiufuyu, TEAM {team}
  * 
  * This class provides an abstract layer for a whole complex chasis controlling process
  * using liberaries:
  *  -- lemlib
  *  -- okapi
  * 
- * Copyright: qiufuyu, TEAM 123A
+ * Copyright: qiufuyu, TEAM {team}
  * 
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -35,21 +35,21 @@ using namespace okapi;
 using CTRL = okapi::ControllerDigital;
 namespace QChasisConfig
 {
-const int LEFT_WHEEL_FRONT = -4;
-const int LEFT_WHEEL_MID = -2;
-const int LEFT_WHEEL_BACK = -1;
-const int RIGHT_WHEEL_FRONT = 13;
-const int RIGHT_WHEEL_MID = 12;
-const int RIGHT_WHEEL_BACK = 11;
+const int LEFT_WHEEL_FRONT = {lwf};
+const int LEFT_WHEEL_MID = {lwm};
+const int LEFT_WHEEL_BACK = {lwb};
+const int RIGHT_WHEEL_FRONT = {rwf};
+const int RIGHT_WHEEL_MID = {rwm};
+const int RIGHT_WHEEL_BACK = {rwb};
 
 //const int  GYRO_PORT = 13;
-const int GYRO_PORT = 3;
-const float TRACK_WIDTH = 11;
-const float WHEEL_DIAMETER =2.75;
-const int WHEEL_RPM = 450 ;//360;  //36->84
-const pros::motor_gearset_e_t GEAREST_BOX = pros::E_MOTOR_GEARSET_06;
-const okapi::AbstractMotor::gearset OKAPI_GEAREST = okapi::AbstractMotor::gearset::blue;
-const okapi::ChassisScales CHASIS_SCALE = {{2.75_in,11_in}, QChasisConfig::WHEEL_RPM};
+const int GYRO_PORT = {gyro};
+const float TRACK_WIDTH = {track};
+const float WHEEL_DIAMETER ={diameter};
+const int WHEEL_RPM = {rpm} ;//360;  //36->84
+const pros::motor_gearset_e_t GEAREST_BOX = {gearnum};
+const okapi::AbstractMotor::gearset OKAPI_GEAREST = {gearcolor};
+const okapi::ChassisScales CHASIS_SCALE = {{{diameter}_in,{track}_in}, QChasisConfig::WHEEL_RPM};
 
 const float LINEAR_KP =8;
 const float LINEAR_KD =30;
