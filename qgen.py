@@ -1,5 +1,5 @@
 #Python 3.x
-version = 1
+version = 2
 import subprocess
 import sys
 import requests
@@ -135,13 +135,14 @@ def checkenv():
     return True
 
 def prompt():
-    print("Bad Arguments!")
+    printok("---------- Q-gen by qiufuyu ----------")
     print("Arg List:")
     print("  make   :  Generate from template")
     print("  build  :  make & compile use pros")
     print("  update :  Download Latest template from server")
     print("  upload :  ONLY upload")
     print("  updatec:  Update qgen script")
+    print("  ver    :  Print version information")
 
 script = '''
 @set PATH=%PATH%;%USERPROFILE%\\AppData\\Roaming\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-cli-windows
@@ -280,7 +281,7 @@ def updatec():
             with open('qgen_new.py','w',newline='',encoding='utf-8') as f:
                 f.write(npy)
             with open('qmake.bat','w',encoding='utf-8',newline='')as f:
-                f.write('@del qgen.py\n@move qgen_new.py qgen_py\n')
+                f.write('@del qgen.py\n@move qgen_new.py qgen.py\n@del qmake.bat')
         except Exception as e:
             printerr('Fail to write to qgen_new.py')
         print('Execute auto-update script...')
@@ -294,6 +295,9 @@ if __name__ == '__main__':
         prompt()
     else:
         cmd = args[1]
+        if cmd == 'ver':
+            print('Q-gen version: '+version+', author: qiufuyu')
+            sys.exit()
         if not checkenv():
             printerr("Qtemplate Environment Not Found in Current Path")
             createenv()
