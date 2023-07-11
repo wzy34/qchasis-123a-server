@@ -5,8 +5,9 @@ team: 123A
 
 wheels:
   rpm: 360
-  radius: 4.1
+  diameter: 4.1
   track: 11.0
+  gear: blue
 
 # use `-` negative notation
 # to set reverse
