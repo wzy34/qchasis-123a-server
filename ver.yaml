@@ -5,8 +5,8 @@ cver: 3
 team: 123A
 
 mod:
-  drive_test: true #注意！注意！当此项为true时，不会发生自动校准程序！只在手动测试时调为true,绕开10秒的自动校准 调自动程序务必！务必！设为false!
-  diagno: false #是否启用诊断模式 诊断模式下，上键自动向前行走一个地垫，用于校准pid,按左键自动左转45° 注意，诊断模式会覆盖你所有其他的功能(除了多线程)
+  drive_test: true 
+  diagno: false
 
 
 wheels:
