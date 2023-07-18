@@ -25,11 +25,8 @@
 #include<string>
 #include<memory>
 
-#define IS_ALL_AWP
 
-//#define IS_RIGHT_AUTO
-
-#define QCHASIS_TRI // 是否启用6电机模式
+{tri_motors}#define QCHASIS_TRI // 是否启用6电机模式
 using namespace okapi;
 
 using CTRL = okapi::ControllerDigital;
@@ -51,14 +48,14 @@ const pros::motor_gearset_e_t GEAREST_BOX = {gearnum};
 const okapi::AbstractMotor::gearset OKAPI_GEAREST = {gearcolor};
 const okapi::ChassisScales CHASIS_SCALE = {{{diameter}_in,{track}_in}, QChasisConfig::WHEEL_RPM};
 
-const float LINEAR_KP =8;
-const float LINEAR_KD =30;
+const float LINEAR_KP ={pids_drive_kp};
+const float LINEAR_KD ={pids_drive_kd};
 
-const float ANGLE_KP =8;
-const float ANGLE_KD =60;
+const float ANGLE_KP ={pids_angle_kp};
+const float ANGLE_KD ={pids_angle_kd};
 
 
-const float SHOOT_DIST = 225.35f;
+const float SHOOT_DIST = {shoot_dist};
 };
 
 
@@ -73,15 +70,15 @@ private:
   lemlib::Pose m_goal= {0,0,0};
   std::shared_ptr<okapi::AsyncMotionProfileController> motion_profiles;
 
-#ifdef IS_RIGHT_AUTO
-  float base_theta = 0;
-#else
-  float base_theta = -90;
-#endif
+  float base_theta = {toward};
+
   bool fst_move = false;
   bool is_calib = false;
   bool m_is_arc = true;
   bool is_left_auto = true;
+
+  bool need_calib = {need_calib};
+  bool diagno = {diagno};
 
   float avail_goal_dist = QChasisConfig::SHOOT_DIST;
 
@@ -126,7 +123,7 @@ private:
     100, // smallErrorTimeout
     3, // largeErrorRange
     500, // largeErrorTimeout
-    5 // slew rate
+    {pids_drive_ks} // slew rate
 };
  
 // turning PID
@@ -137,7 +134,7 @@ lemlib::ChassisController_t angularController {
     100, // smallErrorTimeout
     3, // largeErrorRange
     500, // largeErrorTimeout
-    40 // slew rate
+    {pids_angle_ks} // slew rate
 };
 public:
 

@@ -46,18 +46,22 @@ qchasis::qchasis(bool is_calib, bool is_arc, bool is_left)
     //     caliberate();  // Do caliberate and print time costs
     m_controller = std::make_shared<okapi::Controller>();
     m_is_arc = is_arc;
-    printing_t = std::make_unique<pros::Task>(([=]{
-        while (1)
-        {
-            pros::lcd::set_text(7,"Powered By 123A QChasis!");
-            pros::delay(1000);
-            pros::lcd::set_text(7,"123A is the BEST!");
-            pros::delay(1000);
-            pros::lcd::set_text(7,"123A Will Win!");
-            pros::delay(1000);
-        }
-        
-    }));
+    if(!diagno)
+    {
+        printing_t = std::make_unique<pros::Task>(([=]{
+            while (1)
+            {
+                pros::lcd::set_text(7,"Powered By 123A QChasis!");
+                pros::delay(1000);
+                pros::lcd::set_text(7,"123A is the BEST!");
+                pros::delay(1000);
+                pros::lcd::set_text(7,"123A Will Win!");
+                pros::delay(1000);
+            }
+            
+        }));
+    }else
+        printing_t = nullptr;
 //     motion_profiles =
 //   AsyncMotionProfileControllerBuilder()
 //     .withLimits({
@@ -72,6 +76,8 @@ qchasis::qchasis(bool is_calib, bool is_arc, bool is_left)
 #define M pros::controller_id_e_t::E_CONTROLLER_MASTER
 void qchasis::caliberate()
 {
+    if(!need_calib)
+        return;
     pros::delay(5000);
     qtimer t;
     pros::lcd::set_text(0,"Auto Caliberating ... ");
@@ -111,24 +117,53 @@ void qchasis::caliberate()
 
 void qchasis::tickUpdate()
 {
-    // if(!is_calib)
-    //     return;
+    if(!is_calib && need_calib)
+        return;
+    if(diagno)
+    {
+        pros::lcd::set_background_color(255,0,0);
+        while (1)
+        {
+            auto pose = auto_chasis->getPose();
+            pros::lcd::print(0,"DIAGNOSTIC MODE!");
+            pros::lcd::print(1,"DO NOT DEPLOY IN GAME!");
+            pros::lcd::print(3,"x:%lf",pose.x);
+            pros::lcd::print(4,"y:%lf",pose.y);
+            pros::lcd::print(5,"a:%lf",pose.theta);
+            if(is_calib && need_calib)
+            {
+                if(m_controller->getDigital(CTRL::A))
+                {
+                    driveForward(61); // 24inch
+                }else if(m_controller->getDigital(CTRL::B))
+                {
+                    driveDeltaTurn(45);
+                }
+                while(m_controller->getDigital(CTRL::A)||m_controller->getDigital(CTRL::B))
+                    pros::delay(50);
+            }else
+            {
+                m_controller->setText(2,0,"NOT CALIB!");
+                m_controller->rumble("--");
+                while (1)
+                {
+                    /* code */
+                }
+                
+            }
+        }
+        
+    }
     auto pose = auto_chasis->getPose();
     pros::lcd::print(3,"x:%lf",pose.x);
     pros::lcd::print(4,"y:%lf",pose.y);
     pros::lcd::print(5,"a:%lf",pose.theta);
-    if(1)
+    if(m_controller->getAnalog(okapi::ControllerAnalog::leftX) 
+    || m_controller->getAnalog(okapi::ControllerAnalog::leftY))
     {
-        if(m_controller->getAnalog(okapi::ControllerAnalog::leftX) 
-        || m_controller->getAnalog(okapi::ControllerAnalog::leftY))
-        {
-            fst_move = true;
-        }
-        drive_chasis->getModel()->arcade(-m_controller->getAnalog(okapi::ControllerAnalog::leftX),-m_controller->getAnalog(okapi::ControllerAnalog::leftY));
-    }else
-    {
-        // TODO: 
+        fst_move = true;
     }
+    drive_chasis->getModel()->arcade(-m_controller->getAnalog(okapi::ControllerAnalog::leftX),-m_controller->getAnalog(okapi::ControllerAnalog::leftY));
 }
 void qchasis::setGyroHeading(double angle)
 {
