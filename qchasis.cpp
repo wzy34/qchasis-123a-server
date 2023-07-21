@@ -31,11 +31,11 @@ qchasis::qchasis(bool is_calib, bool is_arc, bool is_left)
 //         {QChasisConfig::RIGHT_WHEEL_FRONT,QChasisConfig::RIGHT_WHEEL_BACK}
 // #endif
 #ifdef QCHASIS_TRI
-        {QChasisConfig::LEFT_WHEEL_FRONT,QChasisConfig::LEFT_WHEEL_MID,QChasisConfig::LEFT_WHEEL_BACK},
-        {QChasisConfig::RIGHT_WHEEL_FRONT,QChasisConfig::RIGHT_WHEEL_MID,QChasisConfig::RIGHT_WHEEL_BACK}
+        {{revl1}QChasisConfig::LEFT_WHEEL_FRONT,{revl2}QChasisConfig::LEFT_WHEEL_MID,{revl3}QChasisConfig::LEFT_WHEEL_BACK},
+        {{revr1}QChasisConfig::RIGHT_WHEEL_FRONT,{revr2}QChasisConfig::RIGHT_WHEEL_MID,{revr3}QChasisConfig::RIGHT_WHEEL_BACK}
 #else
-        {QChasisConfig::LEFT_WHEEL_FRONT,QChasisConfig::LEFT_WHEEL_BACK},
-        {QChasisConfig::RIGHT_WHEEL_FRONT,QChasisConfig::RIGHT_WHEEL_BACK}
+        {{revl1}QChasisConfig::LEFT_WHEEL_FRONT,{revl3}QChasisConfig::LEFT_WHEEL_BACK},
+        {{revr1}QChasisConfig::RIGHT_WHEEL_FRONT,{revr3}QChasisConfig::RIGHT_WHEEL_BACK}
 #endif
     )
     .withDimensions(QChasisConfig::OKAPI_GEAREST, QChasisConfig::CHASIS_SCALE)

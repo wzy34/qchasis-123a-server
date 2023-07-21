@@ -1,5 +1,5 @@
 #Python 3.x
-version = 3
+version = 4
 import subprocess
 import sys
 import requests
@@ -218,8 +218,12 @@ def build(ispros):
         printerr('Fail to load template file')
         return False
     print('Generate `qchasis.h` with `chasis.yaml` ...',end='',flush=True)
-    codeh = codeh.replace('{lwf}',str(cfg['left_motors']['front'])).replace('{lwm}',str(cfg['left_motors']['mid'])).replace('{lwb}',str(cfg['left_motors']['back']))
-    codeh = codeh.replace('{rwf}',str(cfg['right_motors']['front'])).replace('{rwm}',str(cfg['right_motors']['mid'])).replace('{rwb}',str(cfg['right_motors']['back']))
+    codeh = codeh.replace('{lwf}',str(abs(cfg['left_motors']['front']))).replace('{lwm}',str(abs(cfg['left_motors']['mid']))).replace('{lwb}',str(abs(cfg['left_motors']['back'])))
+    codeh = codeh.replace('{rwf}',str(abs(cfg['right_motors']['front']))).replace('{rwm}',str(abs(cfg['right_motors']['mid']))).replace('{rwb}',str(abs(cfg['right_motors']['back'])))
+    codecpp = codecpp.replace('{revl1}',str('-' if (cfg['left_motors']['front']<0) else '')).replace('{revl2}',str('-' if (cfg['left_motors']['mid']<0) else '')).replace('{revl3}',str('-' if (cfg['left_motors']['back']<0) else ''))
+    codecpp = codecpp.replace('{revr1}',str('-' if (cfg['right_motors']['front']<0) else '')).replace('{revr2}',str('-' if (cfg['right_motors']['mid'])<0 else '')).replace('{revr3}',str('-' if (cfg['right_motors']['back'])<0 else ''))
+    codeh = codeh.replace('{revl1}',str('true' if (cfg['left_motors']['front']<0) else 'false')).replace('{revl2}',str('true' if (cfg['left_motors']['mid']<0) else 'false')).replace('{revl3}',str('true' if (cfg['left_motors']['back']<0) else 'false'))
+    codeh = codeh.replace('{revr1}',str('true' if (cfg['right_motors']['front']<0) else 'false')).replace('{revr2}',str('true' if (cfg['right_motors']['mid'])<0 else 'false')).replace('{revr3}',str('true' if (cfg['right_motors']['back'])<0 else 'false'))
     codeh = codeh.replace('{gyro}',str(cfg['gyro']))
     wheels = cfg['wheels']
     pids = cfg['pids']
