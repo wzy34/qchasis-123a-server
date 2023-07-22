@@ -62,7 +62,7 @@ const float SHOOT_DIST = {shoot_dist};
 class qchasis : std::enable_shared_from_this<qchasis>
 {
 private:
-  std::shared_ptr<okapi::ChassisController> drive_chasis;
+  //std::shared_ptr<okapi::ChassisController> drive_chasis;
   std::shared_ptr<lemlib::Chassis> auto_chasis;
   std::unique_ptr<pros::Task> printing_t;
   std::unique_ptr<pros::Task> async_action;
@@ -82,12 +82,12 @@ private:
 
   float avail_goal_dist = QChasisConfig::SHOOT_DIST;
 
-  pros::Motor left_front_motor {QChasisConfig::LEFT_WHEEL_FRONT, QChasisConfig::GEAREST_BOX, {revl1}}; // port 1, blue gearbox, not reversed
-  pros::Motor left_mid_motor{QChasisConfig::LEFT_WHEEL_MID, QChasisConfig::GEAREST_BOX, {revl2}}; // port 2, green gearbox, not reversed
-  pros::Motor left_back_motor{QChasisConfig::LEFT_WHEEL_BACK, QChasisConfig::GEAREST_BOX, {revl3}}; // port 2, green gearbox, not reversed
-  pros::Motor right_front_motor{QChasisConfig::RIGHT_WHEEL_FRONT, QChasisConfig::GEAREST_BOX, {revr1}}; // port 1, blue gearbox, not reversed
-  pros::Motor right_mid_motor{QChasisConfig::RIGHT_WHEEL_MID, QChasisConfig::GEAREST_BOX, {revr2}}; // port 2, green gearbox, not reversed
-  pros::Motor right_back_motor{QChasisConfig::RIGHT_WHEEL_BACK, QChasisConfig::GEAREST_BOX, {revr3}}; // port 2, green gearbox, not reversed
+  pros::Motor left_front_motor {QChasisConfig::LEFT_WHEEL_FRONT, QChasisConfig::GEAREST_BOX, true}; // port 1, blue gearbox, not reversed
+  pros::Motor left_mid_motor{QChasisConfig::LEFT_WHEEL_MID, QChasisConfig::GEAREST_BOX, true}; // port 2, green gearbox, not reversed
+  pros::Motor left_back_motor{QChasisConfig::LEFT_WHEEL_BACK, QChasisConfig::GEAREST_BOX, true}; // port 2, green gearbox, not reversed
+  pros::Motor right_front_motor{QChasisConfig::RIGHT_WHEEL_FRONT, QChasisConfig::GEAREST_BOX, false}; // port 1, blue gearbox, not reversed
+  pros::Motor right_mid_motor{QChasisConfig::RIGHT_WHEEL_MID, QChasisConfig::GEAREST_BOX, false}; // port 2, green gearbox, not reversed
+  pros::Motor right_back_motor{QChasisConfig::RIGHT_WHEEL_BACK, QChasisConfig::GEAREST_BOX, false}; // port 2, green gearbox, not reversed
 
 #ifdef QCHASIS_TRI
   pros::MotorGroup left_side_motors{{left_front_motor,left_mid_motor, left_back_motor}};

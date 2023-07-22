@@ -21,27 +21,8 @@ using namespace okapi;
 qchasis::qchasis(bool is_calib, bool is_arc, bool is_left)
 {
     is_left_auto = is_left;
-    drive_chasis = ChassisControllerBuilder().withMotors(
 
-// #ifdef QCHASIS_TRI
-//         {-QChasisConfig::LEFT_WHEEL_FRONT,-QChasisConfig::LEFT_WHEEL_MID,-QChasisConfig::LEFT_WHEEL_BACK},
-//         {QChasisConfig::RIGHT_WHEEL_FRONT,QChasisConfig::RIGHT_WHEEL_MID,QChasisConfig::RIGHT_WHEEL_BACK}
-// #else
-//         {-QChasisConfig::LEFT_WHEEL_FRONT,-QChasisConfig::LEFT_WHEEL_BACK},
-//         {QChasisConfig::RIGHT_WHEEL_FRONT,QChasisConfig::RIGHT_WHEEL_BACK}
-// #endif
-#ifdef QCHASIS_TRI
-        {{revl1}QChasisConfig::LEFT_WHEEL_FRONT,{revl2}QChasisConfig::LEFT_WHEEL_MID,{revl3}QChasisConfig::LEFT_WHEEL_BACK},
-        {{revr1}QChasisConfig::RIGHT_WHEEL_FRONT,{revr2}QChasisConfig::RIGHT_WHEEL_MID,{revr3}QChasisConfig::RIGHT_WHEEL_BACK}
-#else
-        {{revl1}QChasisConfig::LEFT_WHEEL_FRONT,{revl3}QChasisConfig::LEFT_WHEEL_BACK},
-        {{revr1}QChasisConfig::RIGHT_WHEEL_FRONT,{revr3}QChasisConfig::RIGHT_WHEEL_BACK}
-#endif
-    )
-    .withDimensions(QChasisConfig::OKAPI_GEAREST, QChasisConfig::CHASIS_SCALE)
-    .build();
-
-    // auto_chasis = std::make_shared<lemlib::Chassis>(drivetrain,lateralController,angularController,sensors);
+    auto_chasis = std::make_shared<lemlib::Chassis>(drivetrain,lateralController,angularController,sensors);
     // if(is_calib)
     //     caliberate();  // Do caliberate and print time costs
     m_controller = std::make_shared<okapi::Controller>();
@@ -163,7 +144,12 @@ void qchasis::tickUpdate()
     {
         fst_move = true;
     }
-    drive_chasis->getModel()->arcade(-m_controller->getAnalog(okapi::ControllerAnalog::leftX),-m_controller->getAnalog(okapi::ControllerAnalog::leftY));
+    int power = -m_controller->getAnalog(okapi::ControllerAnalog::leftY);
+    int turn = -m_controller->getAnalog(okapi::ControllerAnalog::leftY);
+    int left = power + turn;
+    int right = power - turn;
+    left_side_motors.move(left);
+    right_side_motors.move(right);
 }
 void qchasis::setGyroHeading(double angle)
 {
