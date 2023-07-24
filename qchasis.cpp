@@ -144,12 +144,12 @@ void qchasis::tickUpdate()
     {
         fst_move = true;
     }
-    int power = -m_controller->getAnalog(okapi::ControllerAnalog::leftY);
-    int turn = -m_controller->getAnalog(okapi::ControllerAnalog::leftY);
-    int left = power + turn;
-    int right = power - turn;
-    left_side_motors.move(left);
-    right_side_motors.move(right);
+    float power = m_controller->getAnalog(okapi::ControllerAnalog::leftY);
+    float turn = m_controller->getAnalog(okapi::ControllerAnalog::leftX);
+    float left = power + turn;
+    float right = power - turn;
+    left_side_motors.move(left*127);
+    right_side_motors.move(right*127);
 }
 void qchasis::setGyroHeading(double angle)
 {
@@ -157,7 +157,7 @@ void qchasis::setGyroHeading(double angle)
 }
 std::shared_ptr<okapi::ChassisController> qchasis::getDriver()
 {
-    return drive_chasis;
+    //return drive_chasis;
 }
 std::shared_ptr<lemlib::Chassis> qchasis::getAutoDriver()
 {
