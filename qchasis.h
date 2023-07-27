@@ -147,7 +147,7 @@ public:
     /**
      * It should be called for every 10ms
     */
-    void tickUpdate();
+    void tickUpdate(float multi=1);
 
     /**
      * Caliberate the Odometry system

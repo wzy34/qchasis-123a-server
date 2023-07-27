@@ -96,7 +96,7 @@ void qchasis::caliberate()
     inertial_sensor.set_rotation(base_theta);
 }
 
-void qchasis::tickUpdate()
+void qchasis::tickUpdate(float multi)
 {
     if(!is_calib && need_calib)
         return;
@@ -146,8 +146,8 @@ void qchasis::tickUpdate()
     float turn = m_controller->getAnalog(okapi::ControllerAnalog::leftX);
     float left = power + turn;
     float right = power - turn;
-    left_side_motors.move(left*127);
-    right_side_motors.move(right*127);
+    left_side_motors.move(left*127*multi);
+    right_side_motors.move(right*127*multi);
     }
     
 }
