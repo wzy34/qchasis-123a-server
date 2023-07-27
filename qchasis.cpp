@@ -103,8 +103,6 @@ void qchasis::tickUpdate()
     if(diagno)
     {
         pros::lcd::set_background_color(255,0,0);
-        while (1)
-        {
             auto pose = auto_chasis->getPose();
             pros::lcd::print(0,"DIAGNOSTIC MODE!");
             pros::lcd::print(1,"DO NOT DEPLOY IN GAME!");
@@ -132,9 +130,9 @@ void qchasis::tickUpdate()
                 }
                 
             }
-        }
         
-    }
+    }else
+    {
     auto pose = auto_chasis->getPose();
     pros::lcd::print(3,"x:%lf",pose.x);
     pros::lcd::print(4,"y:%lf",pose.y);
@@ -150,6 +148,8 @@ void qchasis::tickUpdate()
     float right = power - turn;
     left_side_motors.move(left*127);
     right_side_motors.move(right*127);
+    }
+    
 }
 void qchasis::setGyroHeading(double angle)
 {
