@@ -18,15 +18,28 @@
 #include"qtimer.h"
 using namespace okapi;
 
-qchasis::qchasis(bool is_calib, bool is_arc, bool is_left)
+qchasis::qchasis(qchasis_drivemode mode)
 {
-    is_left_auto = is_left;
-
+    
     auto_chasis = std::make_shared<lemlib::Chassis>(drivetrain,lateralController,angularController,sensors);
     // if(is_calib)
     //     caliberate();  // Do caliberate and print time costs
     m_controller = std::make_shared<okapi::Controller>();
-    m_is_arc = is_arc;
+    if(mode == qchasis_drivemode::CALIB_DRIVE)
+    {
+        need_calib = true;
+        diagno = false;
+    }else if(mode == qchasis_drivemode::DIAGNO_DRIVE)
+    {
+        need_calib = true;
+        diagno = true;
+    }
+    else if(mode == qchasis_drivemode::ONLY_DRIVE)
+    {
+        need_calib = false;
+        diagno = false;
+    }
+    
     if(!diagno)
     {
         printing_t = std::make_unique<pros::Task>(([=]{
@@ -42,17 +55,7 @@ qchasis::qchasis(bool is_calib, bool is_arc, bool is_left)
             
         }));
     }else
-        printing_t = nullptr;
-//     motion_profiles =
-//   AsyncMotionProfileControllerBuilder()
-//     .withLimits({
-//       1.0, // Maximum linear velocity of the Chassis in m/s
-//       2.0, // Maximum linear acceleration of the Chassis in m/s/s
-//       10.0 // Maximum linear jerk of the Chassis in m/s/s/s
-//     })
-//     .withOutput(drive_chasis)
-//     .buildMotionProfileController();
-    
+        printing_t = nullptr;    
 }
 #define M pros::controller_id_e_t::E_CONTROLLER_MASTER
 void qchasis::caliberate()
@@ -131,31 +134,32 @@ void qchasis::tickUpdate(float multi)
                 
             }
         
-    }else
-    {
-    auto pose = auto_chasis->getPose();
-    pros::lcd::print(3,"x:%lf",pose.x);
-    pros::lcd::print(4,"y:%lf",pose.y);
-    pros::lcd::print(5,"a:%lf",pose.theta);
-    if(m_controller->getAnalog(okapi::ControllerAnalog::leftX) 
-    || m_controller->getAnalog(okapi::ControllerAnalog::leftY))
-    {
-        fst_move = true;
     }
-    float power = m_controller->getAnalog(okapi::ControllerAnalog::leftY);
-    float turn = m_controller->getAnalog(okapi::ControllerAnalog::leftX);
-    if(abs(power)<0.1)
+    else
     {
-        power=0;
-    }
-    if(abs(turn)<0.1)
-    {
-        turn=0;
-    }
-    float left = power + turn;
-    float right = power - turn;
-    left_side_motors.move(left*127*multi);
-    right_side_motors.move(right*127*multi);
+        auto pose = auto_chasis->getPose();
+        pros::lcd::print(3,"x:%lf",pose.x);
+        pros::lcd::print(4,"y:%lf",pose.y);
+        pros::lcd::print(5,"a:%lf",pose.theta);
+        if(m_controller->getAnalog(okapi::ControllerAnalog::leftX) 
+        || m_controller->getAnalog(okapi::ControllerAnalog::leftY))
+        {
+            fst_move = true;
+        }
+        float power = m_controller->getAnalog(okapi::ControllerAnalog::leftY);
+        float turn = m_controller->getAnalog(okapi::ControllerAnalog::leftX);
+        if(abs(power)<0.1)
+        {
+            power=0;
+        }
+        if(abs(turn)<0.1)
+        {
+            turn=0;
+        }
+        float left = power + turn;
+        float right = power - turn;
+        left_side_motors.move(left*127*multi);
+        right_side_motors.move(right*127*multi);
     }
     
 }
@@ -163,10 +167,7 @@ void qchasis::setGyroHeading(double angle)
 {
     inertial_sensor.set_rotation(angle);
 }
-std::shared_ptr<okapi::ChassisController> qchasis::getDriver()
-{
-    //return drive_chasis;
-}
+
 std::shared_ptr<lemlib::Chassis> qchasis::getAutoDriver()
 {
     return auto_chasis;
@@ -195,17 +196,6 @@ void qchasis::trigAsyncAction(std::function<void()> act)
     async_action = std::make_unique<pros::Task>(act);
 }
 
-void qchasis::calibDirection(float direction)
-{
-    base_theta = direction;
-    inertial_sensor.set_rotation(base_theta);
-}
-
-bool qchasis::checkButton(CTRL key)
-{
-    return m_controller->getDigital(key);
-}
-
 qchasis &qchasis::driveTimedRun(float time_sec, int pct)
 {
     auto_chasis->timedRun(time_sec,pct);
@@ -213,15 +203,15 @@ qchasis &qchasis::driveTimedRun(float time_sec, int pct)
     return (*this);
 }
 
-qchasis &qchasis::driveMoveTo(float dx, float dy, double timeout, bool is_abs)
+qchasis &qchasis::driveMoveTo(float dx, float dy, double timeout, bool is_abs,bool rev_head)
 {
     if(is_abs)
     {
-        auto_chasis->moveTo(dx,dy,(int)timeout);
+        auto_chasis->moveTo(dx,dy,(int)timeout,rev_head);
     }else
     {
         lemlib::Pose o = auto_chasis->getPose();
-        auto_chasis->moveTo(dx+o.x,dy+o.y,(int)timeout);
+        auto_chasis->moveTo(dx+o.x,dy+o.y,(int)timeout,rev_head);
     }
     auto_chasis->brake();
     return (*this);
@@ -271,9 +261,9 @@ qchasis &qchasis::driveCurve(const char* name, float delta, int timeout)
     return (*this);
 }
 
-qchasis &qchasis::driveTurnTo(float x, float y, int timeout)
+qchasis &qchasis::driveTurnTo(float x, float y, int timeout,bool rev)
 {
-    auto_chasis->turnTo(x,y,timeout);
+    auto_chasis->turnTo(x,y,timeout,rev);
     auto_chasis->brake();
     return (*this);
 }

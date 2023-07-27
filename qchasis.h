@@ -1,12 +1,12 @@
 /**
- * This file is created by qiufuyu, TEAM {team}
+ * This file is created by qiufuyu, TEAM 123A
  * 
  * This class provides an abstract layer for a whole complex chasis controlling process
  * using liberaries:
  *  -- lemlib
  *  -- okapi
  * 
- * Copyright: qiufuyu, TEAM {team}
+ * Copyright: qiufuyu, TEAM 123A
  * 
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -25,8 +25,15 @@
 #include<string>
 #include<memory>
 
+/**
+ * Choose whether to enable 6-motors mode
+ *  define the macro below: enable
+ *  otherwise: disable
+*/
+{tri_motors}#define QCHASIS_TRI
 
-{tri_motors}#define QCHASIS_TRI // 是否启用6电机模式
+
+
 using namespace okapi;
 
 using CTRL = okapi::ControllerDigital;
@@ -39,14 +46,12 @@ const int RIGHT_WHEEL_FRONT = {rwf};
 const int RIGHT_WHEEL_MID = {rwm};
 const int RIGHT_WHEEL_BACK = {rwb};
 
-//const int  GYRO_PORT = 13;
 const int GYRO_PORT = {gyro};
 const float TRACK_WIDTH = {track};
 const float WHEEL_DIAMETER ={diameter};
 const int WHEEL_RPM = {rpm} ;//360;  //36->84
-const pros::motor_gearset_e_t GEAREST_BOX = {gearnum};
+const pros::motor_gearset_e_t GEAREST_BOX =  {gearnum};
 const okapi::AbstractMotor::gearset OKAPI_GEAREST = {gearcolor};
-const okapi::ChassisScales CHASIS_SCALE = {{{diameter}_in,{track}_in}, QChasisConfig::WHEEL_RPM};
 
 const float LINEAR_KP ={pids_drive_kp};
 const float LINEAR_KD ={pids_drive_kd};
@@ -58,6 +63,15 @@ const float ANGLE_KD ={pids_angle_kd};
 const float SHOOT_DIST = {shoot_dist};
 };
 
+
+/** qchasis_drivemode */
+typedef enum
+{
+  CALIB_DRIVE,  /**< activate caliberating and enter opcontrol mode*/
+  ONLY_DRIVE,   /**< DO NOT CALIBERATE, directly enter opcontrol mode*/
+  DIAGNO_DRIVE,  /**< activate caliberating and enter diagnostic mode*/
+  NONE_MODE
+}qchasis_drivemode;
 
 class qchasis : std::enable_shared_from_this<qchasis>
 {
@@ -139,74 +153,128 @@ lemlib::ChassisController_t angularController {
 public:
 
     /**
-     * Construct default config for qchasis
+     * @brief Initialize the qchasis
+     * @attention Initialization does not include odometry's caliberate!
      * 
      */
-    qchasis(bool is_calib, bool is_arc, bool is_left_auto = true);
+    qchasis(qchasis_drivemode mode = qchasis_drivemode::NONE_MODE);
 
     /**
-     * It should be called for every 10ms
+     * @brief Update function, called every 10ms
+     * 
+     * @param multi multiple of speed
+     * 
     */
     void tickUpdate(float multi=1);
 
     /**
-     * Caliberate the Odometry system
+     * @brief  the Odometry system
      * 
-     * NOTICE: If the controller SHAKED FOR A LONG TIME, it means `fail to reset the GYRO`!!!
-     * NOTICE: IF the controller SHAKED JUST ONCE, it means `GYRO Rests OK` !!!
+     * @attention: If the controller SHAKED FOR A LONG TIME, it means `fail to reset the GYRO`!!!
+     *           : IF the controller SHAKED JUST ONCE, it means `GYRO Rests OK` !!!
     */
     void caliberate();
 
-    bool isMoved(){return fst_move;}
-
+    /**
+     * @brief reset Gyro heading
+     * @attention you should not use it manually, take `base_theta` instead
+    */
     void setGyroHeading(double angle);
-
-    std::shared_ptr<okapi::ChassisController> getDriver();
 
     std::shared_ptr<lemlib::Chassis> getAutoDriver();
 
     std::shared_ptr<okapi::Controller> getController();
 
-    std::shared_ptr<okapi::AsyncMotionProfileController> getMotionProfile(){return motion_profiles;}
-
+    /**
+     * @brief set the goal's coordinates
+    */
     qchasis& addGoal(lemlib::Pose g);
 
+    /**
+     * @brief turn the chasis to the goal
+    */
     qchasis& headToGoal(int timeout = 800);
 
+    /**
+     * @brief run a function async
+    */
     void trigAsyncAction(std::function<void()> act);
 
-    bool getIsLeftAuto(){return is_left_auto;}
-
-    void calibDirection(float direction);
-
-    bool checkButton(CTRL key);
-
+    /**
+     * @brief move forward for some time with specific percentage
+     * 
+     * @param time_sec running duration
+     * @param pct motors' percentage
+     * 
+     * @attention You should not use this function unless you know what you are doing!
+    */
     qchasis& driveTimedRun(float time_sec, int pct);
 
-    qchasis& driveMoveTo(float dx, float dy, double timeout = 800,bool is_abs = true );
+    /**
+     * @brief move the chasis to a coordinate
+     * 
+     * @param dx x-coordinate
+     * @param dy y-coordinate
+     * @param timeout the most time it will taken to move to the target
+     * @param is_abs is the coordinate a absolute coordinate
+    */
+    qchasis& driveMoveTo(float dx, float dy, double timeout = 800,bool is_abs = true, bool rev_heading = false);
 
     /**
-     * Unit : cm
+     * @brief drive forward for a distance
+     * @note unit: cm
     */
     qchasis& driveForward(float distance, int timeout= 800);
 
     /**
-     * Unit : degree
+     * @brief turn to a ABSOLUTE angle
+     * @note unit: degree
     */
     qchasis& driveTurn(float angle, int timeout = 800);
 
+    /**
+     * @brief turn to an angle relate to the current orientation
+     * @note unit: degree
+    */
     qchasis& driveDeltaTurn(float delta, int timeout = 800);
 
+    /**
+     * @brief reset the current coordinate
+    */
     qchasis& resetPose(float x,float y);
 
     qchasis& driveCurve(const char* name,float delta, int timeout);
 
-    qchasis& driveTurnTo(float x, float y, int timeout = 800);
+    /**
+     * @brief turn to a coordinate
+    */
+    qchasis& driveTurnTo(float x, float y, int timeout = 800,bool rev = false);
 
+    /**
+     * @brief delay for some while
+     * @note unit: ms
+     *       We highly recommend that call this function between any two motions
+     *       for example:
+     *       driveMoveTo(...,...)
+     *       driveDelay(20)
+     *       driveMoveTo(...,...)
+    */
     qchasis& driveDelay(int timeout);
 
+
+    /**
+     * @brief get the distance between current to the goal setted before
+    */
     float getGoalDistance();
 
+    /**
+     * @brief move automatically until the distance between the current to the goal
+     *        is within a range
+     * 
+     * @param distance the target distance, -1 means use `avail_goal_dist`
+     * @param timeout the maximum time to adjust
+     * @param err_range allowing error range(unit: cm)
+    */
     qchasis& driveGoalDistance(float distance = -1, int timeout=800, float err_range = 5);
 
     ~qchasis(){};
