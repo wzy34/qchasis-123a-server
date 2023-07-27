@@ -144,6 +144,14 @@ void qchasis::tickUpdate(float multi)
     }
     float power = m_controller->getAnalog(okapi::ControllerAnalog::leftY);
     float turn = m_controller->getAnalog(okapi::ControllerAnalog::leftX);
+    if(abs(power)<0.1)
+    {
+        power=0;
+    }
+    if(abs(turn)<0.1)
+    {
+        turn=0;
+    }
     float left = power + turn;
     float right = power - turn;
     left_side_motors.move(left*127*multi);
