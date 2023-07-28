@@ -1,5 +1,5 @@
 #Python 3.x
-version = 4
+version = 5
 import subprocess
 import sys
 import requests
@@ -25,18 +25,18 @@ def vercode(res):
         return res
     return ""
 def getpy():
-    res = requests.get("https://qiufuyu123.github.io/qchasis/qgen.py",headers=headers).content.decode()
+    res = requests.get("https://qiufuyu123.github.io/qchasis-123a-server/qgen.py",headers=headers).content.decode()
     if res[0] == '#':
         return res
     return ''
 def getdoth():
-    res = requests.get("https://qiufuyu123.github.io/qchasis/qchasis.h",headers=headers).content.decode()
+    res = requests.get("https://qiufuyu123.github.io/qchasis-123a-server/qchasis.h",headers=headers).content.decode()
     return vercode(res)
 def getdotcpp():
-    res = requests.get("https://qiufuyu123.github.io/qchasis/qchasis.cpp",headers=headers).content.decode()
+    res = requests.get("https://qiufuyu123.github.io/qchasis-123a-server/qchasis.cpp",headers=headers).content.decode()
     return vercode(res)
 def getcfg():
-    res = requests.get("https://qiufuyu123.github.io/qchasis/ver.yaml",headers=headers).content.decode()
+    res = requests.get("https://qiufuyu123.github.io/qchasis-123a-server/ver.yaml",headers=headers).content.decode()
     if res[0]=='v' and res[1] == 'e':
         return res
     return ''
