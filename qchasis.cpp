@@ -207,11 +207,11 @@ qchasis &qchasis::driveMoveTo(float dx, float dy, double timeout, bool is_abs,bo
 {
     if(is_abs)
     {
-        auto_chasis->moveTo(dx,dy,(int)timeout,rev_head);
+        auto_chasis->moveTo(dx,dy,(int)timeout,200.0,false,rev_head);
     }else
     {
         lemlib::Pose o = auto_chasis->getPose();
-        auto_chasis->moveTo(dx+o.x,dy+o.y,(int)timeout,rev_head);
+        auto_chasis->moveTo(dx+o.x,dy+o.y,(int)timeout,200.0,false,rev_head);
     }
     //auto_chasis->brake();
     return (*this);
