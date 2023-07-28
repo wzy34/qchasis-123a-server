@@ -199,7 +199,7 @@ void qchasis::trigAsyncAction(std::function<void()> act)
 qchasis &qchasis::driveTimedRun(float time_sec, int pct)
 {
     auto_chasis->timedRun(time_sec,pct);
-    auto_chasis->brake();
+    //auto_chasis->brake();
     return (*this);
 }
 
@@ -213,7 +213,7 @@ qchasis &qchasis::driveMoveTo(float dx, float dy, double timeout, bool is_abs,bo
         lemlib::Pose o = auto_chasis->getPose();
         auto_chasis->moveTo(dx+o.x,dy+o.y,(int)timeout,rev_head);
     }
-    auto_chasis->brake();
+    //auto_chasis->brake();
     return (*this);
 }
 #define IN2CM(x) (x/0.3937007874)
@@ -228,7 +228,7 @@ qchasis &qchasis::driveForward(float distance, int timeout)
     float dx = std::sin(theta) * distance;
     float dy = std::cos(theta) * distance;
     getAutoDriver()->moveTo(o.x + dx, o.y + dy,timeout);
-    auto_chasis->brake();
+    //auto_chasis->brake();
 
     return (*this);
 }
@@ -236,7 +236,7 @@ qchasis &qchasis::driveForward(float distance, int timeout)
 qchasis &qchasis::driveTurn(float angle, int timeout)
 {
     auto_chasis->turnAngle(angle,timeout);
-    auto_chasis->brake();
+    //auto_chasis->brake();
 
     return (*this);
 }
@@ -244,7 +244,7 @@ qchasis &qchasis::driveTurn(float angle, int timeout)
 qchasis &qchasis::driveDeltaTurn(float delta, int timeout)
 {
     auto_chasis->turnAngle(auto_chasis->getPose().theta + delta,timeout);
-    auto_chasis->brake();
+    //auto_chasis->brake();
 
     return (*this);
 }
@@ -264,7 +264,7 @@ qchasis &qchasis::driveCurve(const char* name, float delta, int timeout)
 qchasis &qchasis::driveTurnTo(float x, float y, int timeout,bool rev)
 {
     auto_chasis->turnTo(x,y,timeout,rev);
-    auto_chasis->brake();
+    //auto_chasis->brake();
     return (*this);
 }
 
