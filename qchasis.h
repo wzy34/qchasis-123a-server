@@ -167,6 +167,8 @@ public:
     */
     void tickUpdate(float multi=1);
 
+    void releaseMotors();
+    
     /**
      * @brief  the Odometry system
      * 

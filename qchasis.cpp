@@ -219,6 +219,13 @@ qchasis &qchasis::driveMoveTo(float dx, float dy, double timeout, bool is_abs,bo
 #define IN2CM(x) (x/0.3937007874)
 #define CM2IN(x) (x*0.3937007874)
 #define DEG2RAD(x) (3.1415926f / 180.0f * x)
+
+void qchasis::releaseMotors()
+{
+    left_side_motors.set_brake_modes(pros::motor_brake_mode_e::E_MOTOR_BRAKE_COAST);
+    right_side_motors.set_brake_modes(pros::motor_brake_mode_e::E_MOTOR_BRAKE_COAST);
+}
+
 qchasis &qchasis::driveForward(float distance, int timeout)
 {
     distance = CM2IN(distance);
