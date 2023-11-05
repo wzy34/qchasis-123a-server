@@ -240,6 +240,19 @@ qchasis &qchasis::driveForward(float distance, int timeout)
     return (*this);
 }
 
+qchasis &qchasis::driveBackward(float distance, int timeout, int speed)
+{
+    distance = -CM2IN(distance);
+    float theta = auto_chasis->getPose().theta;
+    theta = DEG2RAD(theta);
+    lemlib::Pose o = getAutoDriver()->getPose();
+    float dx = std::sin(theta) * distance;
+    float dy = std::cos(theta) * distance;
+    getAutoDriver()->moveTo(o.x + dx, o.y + dy,timeout,speed);
+    auto_chasis->brake();
+    return (*this);
+}
+
 qchasis &qchasis::driveTurn(float angle, int timeout)
 {
     auto_chasis->turnAngle(angle,timeout);
