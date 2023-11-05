@@ -227,7 +227,7 @@ public:
      * @note unit: cm
     */
     qchasis& driveForward(float distance, int timeout= 800);
-
+    qchasis& driveBackward(float distance, int timeout = 800);
     /**
      * @brief turn to a ABSOLUTE angle
      * @note unit: degree
